@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sbromberger/gographs"
+	"github.com/sbromberger/gographs-generic"
 )
 
 type logvisit struct {
