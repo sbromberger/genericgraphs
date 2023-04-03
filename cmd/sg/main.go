@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sbromberger/gographs-generic"
+	"github.com/sbromberger/genericgraphs"
 )
 
 type logvisit struct {
@@ -72,7 +72,7 @@ func main() {
 	d := []uint32{1, 2, 3, 1}
 
 	sg := gographs.New(s, d)
-	// l := logvisit{ make([]bool, 0, nv(sg))}
+	l := logvisit{make([]bool, 0, sg.Nv())}
 	lev := Levels[uint32]{0, make(map[uint32]int, sg.Nv())}
 	fmt.Printf("sg = %v\n", sg)
 

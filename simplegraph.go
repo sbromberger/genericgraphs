@@ -1,4 +1,4 @@
-package gographs
+package genericgraphs
 
 import (
 	"sort"
