@@ -13,10 +13,10 @@ type Graph[T Vertex] interface {
 }
 
 type Visitors[T Vertex] interface {
-	OpenVertex(g Graph[T], v T) bool
-	VisitVertex(g Graph[T], u, v T) bool
-	RevisitVertex(g Graph[T], u, v T) bool
-	CloseVertex(g Graph[T], v T) bool
+	OpenVertex(v T) bool
+	VisitVertex(u, v T) bool
+	RevisitVertex(u, v T) bool
+	CloseVertex(v T) bool
 	Visited(v T) bool
 }
 
@@ -37,14 +37,14 @@ func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) (bool, error) {
 	nextLevel := make([]T, 0, 4)
 
 	currLevel = append(currLevel, seed)
-	if !visitors.VisitVertex(g, seed, seed) {
+	if !visitors.VisitVertex(seed, seed) {
 		return false, EarlyTerminationError("visit vertex")
 	}
 
 	var u T
 	for len(currLevel) > 0 {
 		u, currLevel = currLevel[0], currLevel[1:]
-		if !visitors.OpenVertex(g, u) {
+		if !visitors.OpenVertex(u) {
 			return false, EarlyTerminationError("open vertex")
 		}
 		neighs, err := g.Neighbors(u)
@@ -53,18 +53,18 @@ func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) (bool, error) {
 		}
 		for _, v := range neighs {
 			if !visitors.Visited(v) {
-				if !visitors.VisitVertex(g, u, v) {
+				if !visitors.VisitVertex(u, v) {
 					return false, EarlyTerminationError("visit vertex")
 				}
 				nextLevel = append(nextLevel, v)
 			} else {
-				if !visitors.RevisitVertex(g, u, v) {
+				if !visitors.RevisitVertex(u, v) {
 					return false, EarlyTerminationError("revisit vertex")
 				}
 			}
 		}
 
-		if !visitors.CloseVertex(g, u) {
+		if !visitors.CloseVertex(u) {
 			return false, EarlyTerminationError("close vertex")
 		}
 		nextLevel, currLevel = currLevel, nextLevel
