@@ -15,11 +15,10 @@ func main() {
 	lev := genericgraphs.NewLevelVisitor(genericgraphs.Graph[uint32](&sg))
 	fmt.Printf("sg = %v\n", sg)
 
-	finished, err := genericgraphs.BFS[uint32](&sg, 0, &lev)
+	err := genericgraphs.BFS[uint32](&sg, 0, &lev)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		return
 	}
-	fmt.Printf("finished prematurely: %v\n", !finished)
 	fmt.Printf("levels: %v\n", lev)
 }

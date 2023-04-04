@@ -32,44 +32,44 @@ func (e *InvalidVertexError) Error() string {
 	return fmt.Sprintf("InvalidVertexError: %s", string(*e))
 }
 
-func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) (bool, error) {
+func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) error {
 	currLevel := make([]T, 0, 4)
 	nextLevel := make([]T, 0, 4)
 
 	currLevel = append(currLevel, seed)
 	if !visitors.VisitVertex(seed, seed) {
-		return false, EarlyTerminationError("visit vertex")
+		return EarlyTerminationError("visit vertex")
 	}
 
 	var u T
 	for len(currLevel) > 0 {
 		u, currLevel = currLevel[0], currLevel[1:]
 		if !visitors.OpenVertex(u) {
-			return false, EarlyTerminationError("open vertex")
+			return EarlyTerminationError("open vertex")
 		}
 		neighs, err := g.Neighbors(u)
 		if err != nil {
-			return false, err
+			return err
 		}
 		for _, v := range neighs {
 			if !visitors.Visited(v) {
 				if !visitors.VisitVertex(u, v) {
-					return false, EarlyTerminationError("visit vertex")
+					return EarlyTerminationError("visit vertex")
 				}
 				nextLevel = append(nextLevel, v)
 			} else {
 				if !visitors.RevisitVertex(u, v) {
-					return false, EarlyTerminationError("revisit vertex")
+					return EarlyTerminationError("revisit vertex")
 				}
 			}
 		}
 
 		if !visitors.CloseVertex(u) {
-			return false, EarlyTerminationError("close vertex")
+			return EarlyTerminationError("close vertex")
 		}
 		nextLevel, currLevel = currLevel, nextLevel
 		nextLevel = nextLevel[:0]
 
 	}
-	return true, nil
+	return nil
 }
