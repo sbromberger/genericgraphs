@@ -1,5 +1,7 @@
 package genericgraphs
 
+import "fmt"
+
 type Vertex interface {
 	comparable
 }
@@ -11,54 +13,63 @@ type Graph[T Vertex] interface {
 }
 
 type Visitors[T Vertex] interface {
-	OpenVertex(v T) error
-	VisitVertex(u, v T) error
-	RevisitVertex(u, v T) error
-	CloseVertex(v T) error
+	OpenVertex(g Graph[T], v T) bool
+	VisitVertex(g Graph[T], u, v T) bool
+	RevisitVertex(g Graph[T], u, v T) bool
+	CloseVertex(g Graph[T], v T) bool
 	Visited(v T) bool
 }
 
-func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) error {
-	visited := make(map[T]struct{}, g.Nv())
+type EarlyTerminationError string
 
+func (e EarlyTerminationError) Error() string {
+	return fmt.Sprintf("EarlyTerminationError: %s", string(e))
+}
+
+type InvalidVertexError string
+
+func (e *InvalidVertexError) Error() string {
+	return fmt.Sprintf("InvalidVertexError: %s", string(*e))
+}
+
+func BFS[T Vertex](g Graph[T], seed T, visitors Visitors[T]) (bool, error) {
 	currLevel := make([]T, 0, 4)
 	nextLevel := make([]T, 0, 4)
 
 	currLevel = append(currLevel, seed)
-	if err := visitors.VisitVertex(seed, seed); err != nil {
-		return err
+	if !visitors.VisitVertex(g, seed, seed) {
+		return false, EarlyTerminationError("visit vertex")
 	}
 
 	var u T
 	for len(currLevel) > 0 {
 		u, currLevel = currLevel[0], currLevel[1:]
-		if err := visitors.OpenVertex(u); err != nil {
-			return err
+		if !visitors.OpenVertex(g, u) {
+			return false, EarlyTerminationError("open vertex")
 		}
 		neighs, err := g.Neighbors(u)
 		if err != nil {
-			return err
+			return false, err
 		}
 		for _, v := range neighs {
 			if !visitors.Visited(v) {
-				if err := visitors.VisitVertex(u, v); err != nil {
-					return err
+				if !visitors.VisitVertex(g, u, v) {
+					return false, EarlyTerminationError("visit vertex")
 				}
 				nextLevel = append(nextLevel, v)
-				visited[v] = struct{}{}
 			} else {
-				if err := visitors.RevisitVertex(u, v); err != nil {
-					return err
+				if !visitors.RevisitVertex(g, u, v) {
+					return false, EarlyTerminationError("revisit vertex")
 				}
 			}
 		}
 
-		if err := visitors.CloseVertex(u); err != nil {
-			return err
+		if !visitors.CloseVertex(g, u) {
+			return false, EarlyTerminationError("close vertex")
 		}
 		nextLevel, currLevel = currLevel, nextLevel
 		nextLevel = nextLevel[:0]
 
 	}
-	return nil
+	return true, nil
 }
