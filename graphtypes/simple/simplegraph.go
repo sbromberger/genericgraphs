@@ -1,4 +1,4 @@
-package genericgraphs
+package simple
 
 import (
 	"sort"
