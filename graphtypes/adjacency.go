@@ -1,4 +1,4 @@
-package adjacency
+package graphtypes
 
 import (
 	"github.com/sbromberger/genericgraphs"
@@ -9,7 +9,7 @@ type AdjGraph[V genericgraphs.Vertex] struct {
 	adjmap map[V]map[V]struct{}
 }
 
-func New[V genericgraphs.Vertex]() AdjGraph[V] {
+func NewAdjacencyGraph[V genericgraphs.Vertex]() AdjGraph[V] {
 	m := make(map[V]map[V]struct{})
 	return AdjGraph[V]{m}
 }
