@@ -1,4 +1,4 @@
-package genericgraphs
+package graphtypes
 
 import (
 	"sort"
@@ -27,7 +27,7 @@ type edge struct {
 	s, d uint32
 }
 
-func New(srcs, dsts []uint32) SimpleGraph {
+func NewSimpleGraph(srcs, dsts []uint32) SimpleGraph {
 	edges := make([]edge, len(srcs))
 	for i, s := range srcs {
 		d := dsts[i]
