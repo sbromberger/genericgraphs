@@ -4,12 +4,15 @@ import (
 	"github.com/sbromberger/genericgraphs"
 )
 
+// Egonet describes a traversal problem that performs a search up
+// to `maxLevel` levels.
 type Egonet[V genericgraphs.Vertex] struct {
 	currLevel int
 	maxLevel  int
 	levels    map[V]int
 }
 
+// NewEgonet will create a new egonet traversal problem with a maximum depth of `maxLevel`.
 func NewEgonet[V genericgraphs.Vertex](maxLevel int) Egonet[V] {
 	return Egonet[V]{currLevel: 0, maxLevel: maxLevel, levels: make(map[V]int)}
 }

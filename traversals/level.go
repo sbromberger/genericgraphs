@@ -4,11 +4,14 @@ import (
 	"github.com/sbromberger/genericgraphs"
 )
 
+// Level represents a `TraversalProblem` that assigns levels to each vertex based on
+// their distance from a given seed.
 type Level[V genericgraphs.Vertex] struct {
 	currLevel int
 	levels    map[V]int
 }
 
+// NewLevel creates a new `Level` traversal problem.
 func NewLevel[V genericgraphs.Vertex](g genericgraphs.Graph[V]) Level[V] {
 	return Level[V]{currLevel: 0, levels: make(map[V]int, g.Nv())}
 }
@@ -36,6 +39,8 @@ func (tp *Level[V]) Visited(v V) bool {
 	return found
 }
 
+// Levels returns a mapping of vertex to level (distance from seed) based on
+// a completed traversal.
 func (tp *Level[V]) Levels() map[V]int {
 	return tp.levels
 }

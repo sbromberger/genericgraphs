@@ -1,75 +1,86 @@
 package traversals
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/sbromberger/genericgraphs"
 )
 
+// Logger provides a generic `TraversalProblem` that logs each
+// vertex access during traversal.
 type Logger[V genericgraphs.Vertex] struct {
 	visited map[V]struct{}
+	logger  *log.Logger
 }
 
-func NewLogger[V genericgraphs.Vertex]() Logger[V] {
-	return Logger[V]{make(map[V]struct{})}
+// NewLogger creates a Logger `TraversalProblem` with the
+// specified logger.
+func NewLogger[V genericgraphs.Vertex](logger *log.Logger) Logger[V] {
+	return Logger[V]{visited: make(map[V]struct{}), logger: logger}
 }
 
-func (*Logger[V]) OpenVertex(v V) bool {
-	fmt.Printf("opening %v\n", v)
+func (l *Logger[V]) OpenVertex(v V) bool {
+	l.logger.Printf("opening %v\n", v)
 	return true
 }
 
-func (*Logger[V]) CloseVertex(v V) bool {
-	fmt.Printf("closing %v\n", v)
+func (l *Logger[V]) CloseVertex(v V) bool {
+	l.logger.Printf("closing %v\n", v)
 	return true
 }
 
-func (tp *Logger[V]) VisitVertex(u, v V) bool {
-	tp.visited[v] = struct{}{}
-	fmt.Printf("visiting %v -> %v\n", u, v)
+func (l *Logger[V]) VisitVertex(u, v V) bool {
+	l.visited[v] = struct{}{}
+	l.logger.Printf("visiting %v -> %v\n", u, v)
 	return true
 }
 
-func (*Logger[V]) RevisitVertex(u, v V) bool {
-	fmt.Printf("revisiting %v -> %v\n", u, v)
+func (l *Logger[V]) RevisitVertex(u, v V) bool {
+	l.logger.Printf("revisiting %v -> %v\n", u, v)
 	return true
 }
 
-func (tp *Logger[V]) Visited(u V) bool {
-	_, found := tp.visited[u]
+func (l *Logger[V]) Visited(u V) bool {
+	_, found := l.visited[u]
 	return found
 }
 
+// Uint32Logger provides a specialized `TraversalProblem` that logs each
+// vertex access during traversal. This logger is designed for simplegraphs
+// with uint32 vertices.
 type Uint32Logger struct {
 	visited []bool
+	logger  *log.Logger
 }
 
-func NewUint32Logger(g genericgraphs.Graph[uint32]) Uint32Logger {
+// NewUint32Logger creates a Uint32Logger `TraversalProblem` with the
+// specified logger.
+func NewUint32Logger(g genericgraphs.Graph[uint32], logger *log.Logger) Uint32Logger {
 	m := make([]bool, g.Nv())
-	return Uint32Logger{m}
+	return Uint32Logger{visited: m, logger: logger}
 }
 
-func (*Uint32Logger) OpenVertex(v uint32) bool {
-	fmt.Printf("opening %d\n", v)
+func (l *Uint32Logger) OpenVertex(v uint32) bool {
+	l.logger.Printf("opening %d\n", v)
 	return true
 }
 
-func (*Uint32Logger) CloseVertex(v uint32) bool {
-	fmt.Printf("closing %d\n", v)
+func (l *Uint32Logger) CloseVertex(v uint32) bool {
+	l.logger.Printf("closing %d\n", v)
 	return true
 }
 
-func (vis *Uint32Logger) VisitVertex(u, v uint32) bool {
-	vis.visited[int(v)] = true
-	fmt.Printf("visiting %d -> %d\n", u, v)
+func (l *Uint32Logger) VisitVertex(u, v uint32) bool {
+	l.visited[int(v)] = true
+	l.logger.Printf("visiting %d -> %d\n", u, v)
 	return true
 }
 
-func (*Uint32Logger) RevisitVertex(u, v uint32) bool {
-	fmt.Printf("revisiting %d -> %d\n", u, v)
+func (l *Uint32Logger) RevisitVertex(u, v uint32) bool {
+	l.logger.Printf("revisiting %d -> %d\n", u, v)
 	return true
 }
 
-func (vis *Uint32Logger) Visited(u uint32) bool {
-	return vis.visited[int(u)]
+func (l *Uint32Logger) Visited(u uint32) bool {
+	return l.visited[int(u)]
 }

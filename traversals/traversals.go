@@ -5,6 +5,10 @@ import (
 	"github.com/sbromberger/genericgraphs/errors"
 )
 
+// BFS performs a breadth-first search on a graph `g` from a seed `seed` using state and
+// visitor functions contained in `TraversalProblem tp`. BFS returns error if any visitor
+// functions return `false`, or if there is an error iterating over the neighbors of any
+// vertex.
 func BFS[T genericgraphs.Vertex](g genericgraphs.Graph[T], seed T, tp TraversalProblem[T]) error {
 	currLevel := make([]T, 0, 4)
 	nextLevel := make([]T, 0, 4)
@@ -47,6 +51,10 @@ func BFS[T genericgraphs.Vertex](g genericgraphs.Graph[T], seed T, tp TraversalP
 	return nil
 }
 
+// DFS performs a depth-first search on a graph `g` from a seed `seed` using state and
+// visitor functions contained in `TraversalProblem tp`. DFS returns error if any visitor
+// functions return `false`, or if there is an error iterating over the neighbors of any
+// vertex.
 func DFS[T genericgraphs.Vertex](g genericgraphs.Graph[T], seed T, tp TraversalProblem[T]) error {
 	stack := make([]T, 0, 4)
 	stack = append(stack, seed)

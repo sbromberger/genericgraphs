@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/sbromberger/genericgraphs"
 	"github.com/sbromberger/genericgraphs/graphtypes"
@@ -12,9 +13,10 @@ func main() {
 	s := []uint32{0, 1, 2, 3}
 	d := []uint32{1, 2, 3, 1}
 
+	logger := log.Default()
 	sg := graphtypes.NewSimpleGraph(s, d)
 	fmt.Printf("sg = %v\n", sg)
-	l := traversals.NewUint32Logger(&sg)
+	l := traversals.NewUint32Logger(&sg, logger)
 	lev := traversals.NewLevel(genericgraphs.Graph[uint32](&sg))
 	fmt.Printf("sg = %v\n", sg)
 
